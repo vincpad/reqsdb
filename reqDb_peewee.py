@@ -269,18 +269,23 @@ class reqDb:
     def lockItem(self, local_id, projectPrefix, user):
         userId = Users.get(Users.user_name == user)
         project = Projects.get(Projects.prefix == projectPrefix)
-        item = Items.update({Items.locked_by=userId}).join(Types, on=(Items.type == Types.id)).where(Types.project == project, Items.local_id == local_id).first()
+        item = Items.select().join(Types, on=(Items.type == Types.id)
+                                   ).where(Types.project == project, Items.local_id == local_id).first()
+        item.locked_by = userId
+        item.save()
 
-    def unlockItem(self, local_id, projectPrefix, user):
-        userId = Users.get(Users.user_name == user)
+    def unlockItem(self, local_id, projectPrefix):
         project = Projects.get(Projects.prefix == projectPrefix)
-        item = Items.update({Items.locked_by=None}).join(Types, on=(Items.type == Types.id)).where(Types.project == project, Items.local_id == local_id).first()
+        item = Items.select().join(Types, on=(Items.type == Types.id)
+                                   ).where(Types.project == project, Items.local_id == local_id).first()
+        item.locked_by = None
+        item.save()
 
     def checkLock(self, local_id, projectPrefix):
         project = Projects.get(Projects.prefix == projectPrefix)
         item = Items.select().join(Types, on=(Items.type == Types.id)).where(
             Types.project == project, Items.local_id == local_id).first()
-        return item.locked_by
+        return Users.get(Users.id == item.locked_by).user_name
 
 
 rdb = reqDb()
