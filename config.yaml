@@ -1,0 +1,17 @@
+credentials:
+  usernames:
+    vrocher:
+      email: vr@hypr-space.com
+      name: Vincent ROCHER
+      password: $2b$12$vcrEc/LGo34ci7x0JhUBjOYnUMYNYmE1l3ffMLdBrGAuRu5XcIMUK
+    rbriggs:
+      email: rbriggs@gmail.com
+      name: Rebecca Briggs
+      password: $2b$12$iGIWZlV/.R05ANG06KkQ7ehsyMoG34jxL44CjLKZup2JCBledmiNe
+cookie:
+  expiry_days: 30
+  key: fiuehzlfkhlzikufhLIZEKUhflizeuhflkEHFlkuezHF876F98ZE76SF98EZGFUKEGFIUY # Must be string
+  name: cookiecookie
+preauthorized:
+  emails:
+  - vr@hypr-space.com
