@@ -1,1 +1,13 @@
 .secret.yaml
+backupJama/history.json
+backupJama/items.json
+backupJama/projects.json
+backupJama/relationship_types.json
+backupJama/relationships.json
+backupJama/types.json
+backupJama/users.json
+__pycache__/gui.cpython-311.pyc
+__pycache__/reqDb_peewee.cpython-311.pyc
+my_database17.db
+ingest_from_jama.py
+backupJama/backup.py

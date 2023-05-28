@@ -2,6 +2,7 @@
 from models_peewee import *
 import pandas as pd
 from utilities import check_email
+import streamlit as st
 
 # try:
 # newcateg = Categories(name="REQUIREMENT")
@@ -110,7 +111,6 @@ class reqDb:
         if prefix == "":  # it is a single requirement
             item = ""
             if local_id != "":
-                print(f"localid:{local_id}")
                 item = Items.get(Items.local_id == local_id)
             if global_id != "":
                 item = Items.get(Items.global_id == global_id)
@@ -208,13 +208,35 @@ class reqDb:
 
     def getRelationsList(self, type):
         typeId = RelationsTypes.get(RelationsTypes.name == type)
-        relations = Relations.select().where(Relations.type_id == typeId)
-        relationsList = []
-        for r in relations:
-            parent = Items.get(Items.id == r.parent_id).local_id
-            child = Items.get(Items.id == r.child_id).local_id
-            relationsList.append((parent, child))
-        return relationsList
+        relations = relations = Relations.select(
+            Relations.parent_id, Relations.child_id).where(Relations.type_id == typeId).tuples()
+        relationsIds = list(relations)
+
+        @st.cache_data
+        def convertToIds(relations):
+            relationsList = []
+            for r in relations:
+                parentId, childId = r
+                parent = Items.get(Items.id == parentId).local_id
+                child = Items.get(Items.id == childId).local_id
+                relationsList.append((parent, child))
+            return relationsList
+        return convertToIds(relationsIds)
+
+    # def getRelationsList(self, type):
+    #     type_obj = RelationsTypes.get(RelationsTypes.name == type)
+    #     relationsList = (
+    #         Relations
+    #         .select(Items.local_id.alias('parent'), Items.local_id.alias('child'))
+    #         .join(Items, on=(Items.id == Relations.parent_id) | (Items.id == Relations.child_id))
+    #         .where(Relations.type_id == type_obj)
+    #         .distinct()
+    #         .tuples()
+    #         .execute()
+    #     )
+
+    #     print(list(relationsList))
+    #     return list(relationsList)
 
     def getTypesList(self, projectPrefix):
         project = Projects.get(Projects.prefix == projectPrefix)
@@ -239,6 +261,9 @@ class reqDb:
         return Items.get(Items.local_id == localId)
 
     def getPrefix(self, item):
+        return Types.get(Types.id == item.type).prefix
+
+    def getPrefixFromLocalId(self, localId):
         return Types.get(Types.id == item.type).prefix
 
     def getItemNameByLocalId(self, localId, projectPrefix):

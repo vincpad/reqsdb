@@ -6,6 +6,18 @@ from yaml.loader import SafeLoader
 with open('./config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
+st.set_page_config(layout="wide")
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
+
 authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],

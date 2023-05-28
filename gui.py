@@ -106,7 +106,7 @@ def newItem(category):
 def viewItem():
     local_id = st.session_state['selectedItem']
     itemDf = rdb.getItemsDf(local_id=local_id)
-    st.warning("vrocher is currently editing this item, it is therefore locked for edition.")
+    # st.warning("vrocher is currently editing this item, it is therefore locked for edition.")
     # get the item type
     if (itemDf.loc[0]["category"] == "REQUIREMENT"):
         headerCol1, headerCol2 = st.columns([2, 1])
@@ -243,10 +243,9 @@ def editItem():
     st.button("Update", on_click=updateItem)
 
 
-def itemsTree():
-    relations = rdb.getRelationsList("HIERARCHY")
-
-    root = list_to_tree_by_relation(relations)
+@st.cache_data
+def getItemTreeFromRelationsList(relationsList):
+    root = list_to_tree_by_relation(relationsList)
 
     def item(key):
         itemDf = rdb.getItemsDf(local_id=key)
@@ -267,9 +266,13 @@ def itemsTree():
                 iterateChildren(i, newItem)
 
     iterateChildren(root, root_item)
+    return root_item
 
+
+def itemsTree():
+    relations = rdb.getRelationsList("HIERARCHY")
+    root_item = getItemTreeFromRelationsList(relations)
     selected_values = antd_tree(items=[root_item], show_line=True)
-    print(selected_values)
     # if the selected value changed, and we were on edit mode, return to view mode
     print(f"selected{selected_values}")
     if (st.session_state['oldSelectedItem'] != st.session_state['selectedItem'] and st.session_state['mode'] in ("edit", "new")):
@@ -280,6 +283,4 @@ def itemsTree():
         st.session_state['selectedItem'] = selected_values[0]
         if st.session_state['mode'] == "home":
             st.session_state['mode'] = "view"
-
-
 # %%
