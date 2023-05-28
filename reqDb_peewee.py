@@ -61,7 +61,7 @@ class reqDb:
         numberOfGlobalItems = len(globalReqs)
 
         localId = f'{projectName}-{prefix}-{numberOfLocalItems + 1}'
-        globalId = f'GLOBAL-{numberOfGlobalItems+1}'
+        globalId = f'GID-{numberOfGlobalItems+1}'
         return localId, globalId
 
     # Item management
